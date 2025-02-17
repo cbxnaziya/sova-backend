@@ -10,9 +10,9 @@ router.post("/login", login);
 router.post('/forget-password/request', requestPasswordReset);
 
 // Route to verify OTP
-router.post('/forget-password/verify-otp', verifyOtp);
+router.post('/forget-password/verify', verifyOtp);
 
 // Route to update the password
-router.post('/forget-password/update-password', updatePassword);
+router.post('/forget-password/update', updatePassword);
 
 module.exports = router;

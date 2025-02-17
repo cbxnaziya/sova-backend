@@ -9,8 +9,17 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
+       // Check if the error is specifically related to token expiration
+       if (error.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: "Token has expired" });
+      }
+      
     res.status(400).json({ message: "Invalid Token" });
   }
 };
 
 module.exports = authMiddleware;
+
+
+
+
