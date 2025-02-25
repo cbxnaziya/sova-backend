@@ -1,4 +1,4 @@
-const Header = require("../models/Header");
+const Header = require("../../models/Header");
 
 // Create new header
 exports.createHeader = async (req, res) => {

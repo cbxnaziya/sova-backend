@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const footerController = require("../controllers/footerController");
+const footerController = require("../../controllers/admin/footerController");
 
 router.post("/", footerController.createOrUpdateFooter);  // Create or Update
 router.get("/", footerController.getFooter);  // Retrieve

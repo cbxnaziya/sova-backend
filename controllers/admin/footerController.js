@@ -1,4 +1,4 @@
-const Footer = require("../models/Footer");
+const Footer = require("../../models/Footer");
 
 // Create or Update Footer
 exports.createOrUpdateFooter = async (req, res) => {

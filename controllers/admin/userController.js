@@ -1,24 +1,26 @@
-const User = require("../models/userModel");
+const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
 
 // Get all users
 exports.getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.json(users);
+    return res.json({success:true,users:users});
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({success:false,message:"Internal server error"})
   }
 };
 
 // Get user by ID
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+
+    const id = req.user;
+    const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({success:false,message:"Internal server error"})
   }
 };
 
@@ -29,6 +31,8 @@ exports.createUser = async (req, res) => {
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
+    console.log("existingUser....",existingUser);
+    
     if (existingUser) return res.status(400).json({ message: "User already exists" });
 
     // Hash password
@@ -46,7 +50,7 @@ exports.createUser = async (req, res) => {
     await newUser.save();
     res.status(201).json({ message: "User created successfully", user: newUser });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({success:false,message:"Internal server error"})
   }
 };
 

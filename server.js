@@ -20,9 +20,11 @@ app.use("/api/posts", require("./routes/postRoutes"));
 
 
 // admin Routes
-app.use("/api/users",  require("./routes/admin/userRoutes"));
-app.use("/api/header", require("./routes/admin/headerRoutes")); 
-app.use("/api/footer",  require("./routes/admin/footerRoutes"));
+app.use("/admin/api/users",  require("./routes/admin/userRoutes"));
+app.use("/admin/api/roles",  require("./routes/admin/rolesRoutes"));
+app.use("/admin/api/customer",  require("./routes/admin/customerRoutes"));
+app.use("/admin/api/header", require("./routes/admin/headerRoutes")); 
+app.use("/admin/api/footer",  require("./routes/admin/footerRoutes"));
 
 
 const PORT = process.env.PORT || 5000;

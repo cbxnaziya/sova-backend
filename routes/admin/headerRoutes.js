@@ -1,5 +1,6 @@
 const express = require("express");
-const { createHeader, getHeaders, getHeaderById, updateHeader, deleteHeader } = require("../controllers/headerController");
+// const { createHeader } = require("../../controllers/admin/headerController");
+const { createHeader, getHeaders, getHeaderById, updateHeader, deleteHeader } = require("../../controllers/admin/headerController");
 
 const router = express.Router();
 
