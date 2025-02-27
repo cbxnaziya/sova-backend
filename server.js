@@ -25,6 +25,7 @@ app.use("/admin/api/roles",  require("./routes/admin/rolesRoutes"));
 app.use("/admin/api/customer",  require("./routes/admin/customerRoutes"));
 app.use("/admin/api/header", require("./routes/admin/headerRoutes")); 
 app.use("/admin/api/footer",  require("./routes/admin/footerRoutes"));
+app.use("/admin/api/contact", require("./routes/admin/contactRoutes"))
 
 
 const PORT = process.env.PORT || 5000;

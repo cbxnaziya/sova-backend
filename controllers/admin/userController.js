@@ -15,9 +15,9 @@ exports.getUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
 
-    const id = req.user;
+    const id = req.user.id;
     const user = await User.findById(id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({success:true, message: "User not found" });
     res.json(user);
   } catch (error) {
     return res.status(500).json({success:false,message:"Internal server error"})
