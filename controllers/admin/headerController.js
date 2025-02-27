@@ -1,21 +1,32 @@
 const Header = require("../../models/Header");
 
-// Create new header
-exports.createHeader = async (req, res) => {
+
+exports.createOrUpdateHeader = async (req, res) => {
   try {
-    const header = new Header(req.body);
-    await header.save();
-    res.status(201).json(header);
+    const existingHeader = await Header.findOne();
+
+    if (existingHeader) {
+      // Update existing header
+      const updatedHeader = await Header.findByIdAndUpdate(existingHeader._id, req.body, { new: true });
+      return res.status(200).json({success:true,message:"Header content updated successfully."});
+    }
+    
+    // Create a new header if none exists
+    const newHeader = new Header(req.body);
+    await newHeader.save();
+    return res.status(201).json({success:true,message:"Header content created successfully."});
+
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Error saving header data", details: error.message });
   }
 };
+
 
 // Get all headers
 exports.getHeaders = async (req, res) => {
   try {
     const headers = await Header.find();
-    res.json(headers);
+   return res.status(200).json({success:true,header:headers});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
