@@ -20,6 +20,6 @@ const HeaderSchema = new mongoose.Schema({
   selectedLanguage: { type: String, required: true },
 });
 
-const Header = mongoose.model("Header", HeaderSchema);
+const Header = mongoose.model("Headre", HeaderSchema);
 
 module.exports = Header;
