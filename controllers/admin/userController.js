@@ -57,11 +57,12 @@ exports.createUser = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
   try {
-    const { email, account_name, company, phone, country } = req.body;
+
+    const { email, account_name, company, phone, country,status } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { email, account_name, company, phone, country },
+      { email, account_name, company, phone, country,status },
       { new: true }
     );
 

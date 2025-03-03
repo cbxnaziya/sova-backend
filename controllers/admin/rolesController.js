@@ -31,3 +31,59 @@ exports.addRole = async (req, res) => {
 
     }
 }
+
+// exports.updateRole = async (req,res) =>{
+//     try{
+
+//     }catch(error){
+//      console.log("Error", error);
+     
+//     }
+// }
+
+
+
+
+// Update Role
+exports.updateRole = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description, status } = req.body;
+
+        const role = await Role.findById(id);
+        if (!role) {
+            return res.status(404).json({ success: false, message: "Role not found." });
+        }
+
+        // Update fields if provided
+        if (name) role.name = name;
+        if (description) role.description = description;
+        if (status !== undefined) role.status = status;
+
+        await role.save();
+
+        return res.json({ success: true, message: "Role updated successfully.", role });
+    } catch (error) {
+        console.error("Error updating role:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+// Delete Role
+exports.removeRole = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const role = await Role.findById(id);
+        if (!role) {
+            return res.status(404).json({ success: false, message: "Role not found." });
+        }
+
+        await Role.findByIdAndDelete(id);
+
+        return res.json({ success: true, message: "Role deleted successfully." });
+    } catch (error) {
+        console.error("Error deleting role:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
