@@ -1,13 +1,23 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const UserSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  account_name: {type:String},
-  company: {type:String},
-  password: { type: String, required: true },
-  phone: { type: String, required: true },
-  country: { type: String, required: true },
-  status:{type:String, enum:["active","inactive"],default:"active"}
-});
+   name : {type:String},
+   email: {type:String},
+   phone: {type:String},
+   password: { type: String, required: true },
+   status:{type:String,enum:["active","inactive","pending"], default:"active"}
 
-module.exports = mongoose.model("User", UserSchema);
+})
+
+module.exports = mongoose.model("User",UserSchema)
+// const mongoose = require("mongoose")
+
+// const CustomerSchema = new mongoose.Schema({
+//    name : {type:String},
+//    email: {type:String},
+//    phone: {type:String},
+//    statue:{type:String,enum:["active","inactive","pending"]}
+
+// })
+
+// module.exports = mongoose.model("User",CustomerSchema)

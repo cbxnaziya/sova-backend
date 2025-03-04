@@ -15,12 +15,12 @@ exports.getRoles = async (req, res) => {
 
 exports.addRole = async (req, res) => {
     try {
-        const { name, description, status } = req.body;
+        const { name, description, status,permissions  } = req.body;
 
         if (await Role.exists({ name })) return res.status(409).json({ success: false, message: "Role already exist." })
 
 
-        const newRole = await Role.create({ name, description, status })
+        const newRole = await Role.create({ name, description, status, permissions  })
 
         return res.status(201).json({ success: true, message: "Role created successfully," })
 
@@ -48,7 +48,7 @@ exports.addRole = async (req, res) => {
 exports.updateRole = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, status } = req.body;
+        const { name, description, status,permissions } = req.body;
 
         const role = await Role.findById(id);
         if (!role) {
@@ -59,6 +59,7 @@ exports.updateRole = async (req, res) => {
         if (name) role.name = name;
         if (description) role.description = description;
         if (status !== undefined) role.status = status;
+        if (permissions) role.permissions = permissions;    
 
         await role.save();
 
