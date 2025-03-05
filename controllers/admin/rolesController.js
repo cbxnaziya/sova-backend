@@ -5,11 +5,9 @@ exports.getRoles = async (req, res) => {
     try {
         const roles = await Role.find();
         return res.json({ success: true, roles: roles })
-
     } catch (error) {
         console.log("Error", error);
         return res.status(500).json({success:false,message:"Internal server error"})
-
     }
 }
 

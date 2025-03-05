@@ -10,23 +10,24 @@ exports.getAllContactForms = async (req, res) => {
   }
 }
 
+
 exports.updateContactForm = async (req, res) => {
   try {
-
     const { status } = req.body;
-    console.log(status);
-    
-    const updateForm = Contact.findByIdAndUpdate(
+    console.log(status, req.params.id);
+
+    const updateForm = await Contact.findByIdAndUpdate(
       req.params.id,
       { status },
       { new: true }
     )
+    console.log("updates form", updateForm);
+    
+    if (!updateForm) return res.status(404).json({ success: false, message: "Contact form not found." })
 
-    if(!updateForm) return res.status(404).json({success:false, message:"Contact form not found."})
-
-      return res.json({ success: true, message: "Status updated successfully",});
+    return res.json({ success: true, message: "Status updated successfully", });
   } catch (error) {
     console.log("error", error);
-   return  res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 }

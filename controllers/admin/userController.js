@@ -41,7 +41,7 @@ exports.getUserById = async (req, res) => {
 // Create a new user
 exports.createUser = async (req, res) => {
   try {
-    const { name, email, phone,password ,status} = req.body;
+    const { name, email, phone,password ,status, role} = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -57,7 +57,8 @@ exports.createUser = async (req, res) => {
       email, 
       phone,
       password: hashedPassword,
-      status
+      status,
+      role
 
     });
 
@@ -72,11 +73,11 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
 
-    const { email, account_name, company, phone, country, status } = req.body;
+    const { name,email, account_name, company, phone, country, status, role } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { email, account_name, company, phone, country, status },
+      {name, email, account_name, company, phone, country, status, role },
       { new: true }
     );
 
