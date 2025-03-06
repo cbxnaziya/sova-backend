@@ -6,12 +6,29 @@ const User = require("../../models/User")
 const Otp = require("../../models/Otp");
 const { getOtp } = require("../../utils/service");
 const sendEmail = require("../../utils/email");
+const Customer = require("../../models/Customer");
 
 
 
 // register controller
 exports.register = async (req, res) => {
   const { email, account_name, company, password, phone, country } = req.body;
+  // try {
+  //   let user = await User.findOne({ email });
+  //   console.log("user",user);
+    
+  //   if (user) return res.status(400).json({ message: "User already exists" });
+
+  //   const hashedPassword = await bcrypt.hash(password, 10);
+  //   user = new User({ email, account_name, company, password: hashedPassword, phone, country, role:"customer" });
+
+  //   await user.save();
+  //   res.status(201).json({ message: "User registered successfully" });
+  // } catch (error) {
+
+  //   console.log("error", error);
+  //   res.status(500).json({ message: "Server Error" });
+  // }
   try {
     let user = await User.findOne({ email });
     console.log("user",user);
@@ -19,7 +36,7 @@ exports.register = async (req, res) => {
     if (user) return res.status(400).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    user = new User({ email, account_name, company, password: hashedPassword, phone, country });
+    user = new Customer({ email, account_name, company, password: hashedPassword, phone, country, role:"customer" });
 
     await user.save();
     res.status(201).json({ message: "User registered successfully" });
@@ -35,7 +52,7 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
 
-    const user = await User.findOne({ email });
+    const user = await Customer.findOne({ email });
     if (!user) return res.status(400).json({   success: false,message: "Invalid Credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -43,7 +60,7 @@ exports.login = async (req, res) => {
     console.log(" process.env.JWT_SECRET....", process.env.JWT_SECRET,user);
     
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id, role:user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
 
     res.json({  success: true,    message: "Login successful", token });
@@ -59,7 +76,7 @@ exports.requestPasswordReset = async (req, res) => {
 
   try {
     // Check if the user exists
-    const user = await User.findOne({ email });
+    const user = await Customer.findOne({ email });
     if (!user) return res.status(400).json({ message: "User not found" });
 
     // Generate OTP
@@ -132,7 +149,7 @@ exports.updatePassword = async (req, res) => {
 
   try {
     // Find the user by email
-    const user = await User.findOne({ email });
+    const user = await Customer.findOne({ email });
     // const existingOtp = await Otp.findOne({email});
     if (!user) return res.status(400).json({ message: "User not found" });
 

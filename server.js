@@ -20,6 +20,7 @@ app.use("/api/posts", require("./routes/postRoutes"));
 
 
 // admin Routes
+app.use("/admin/api/auth", require("./routes/admin/authRoutes"));
 app.use("/admin/api/users",  require("./routes/admin/userRoutes"));
 app.use("/admin/api/customer",  require("./routes/admin/customerRoutes"));
 app.use("/admin/api/roles",  require("./routes/admin/rolesRoutes"));

@@ -2,15 +2,11 @@
 // const User = require("../../models/User");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
+const Role = require("../../models/Role");
 
 // Get all users
 exports.getUsers = async (req, res) => {
-  // try {
-  //   const users = await User.find();
-  //   return res.json({success:true,users:users});
-  // } catch (error) {
-  //   return res.status(500).json({success:false,message:"Internal server error"})
-  // }
+
   try {
 
     const users = await User.find();
@@ -98,5 +94,26 @@ exports.deleteUser = async (req, res) => {
     res.json({ success: true, message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getUserPermission = async (req, res) => {
+  try {
+    const name = req.user.role;
+    console.log(req.user.role, "role");
+    
+    // Find the role that matches the logged-in user's role
+    const roleData = await Role.findOne({ name });
+    
+    console.log(roleData, "roleData");
+    if (!roleData) {
+      return res.status(404).json({ status: false, message: "Role not found." });
+    }
+
+    // Return only the permissions of the authenticated user's role
+    return res.status(200).json({ status: true, permissions: roleData.permissions });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ status: false, message: "Internal Server Error" });
   }
 };
