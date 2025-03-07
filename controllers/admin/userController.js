@@ -111,7 +111,7 @@ exports.getUserPermission = async (req, res) => {
     }
 
     // Return only the permissions of the authenticated user's role
-    return res.status(200).json({ status: true, permissions: roleData.permissions });
+    return res.status(200).json({ status: true, permissions: roleData.permissions, role:roleData.name  });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ status: false, message: "Internal Server Error" });

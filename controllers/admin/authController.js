@@ -16,7 +16,7 @@ const jwt = require("jsonwebtoken");
      console.log(" process.env.JWT_SECRET....", process.env.JWT_SECRET,user);
      
  
-     const token = jwt.sign({ id: user._id, role:user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+     const token = jwt.sign({ id: user._id, role:user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
  
  
      res.json({  success: true,    message: "Login successful", token });

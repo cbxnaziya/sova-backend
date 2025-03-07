@@ -17,6 +17,8 @@ connectDB();
 app.use("/api/auth", require("./routes/user/authRoutes"));
 app.use("/api/contact", require("./routes/user/contactRoutes"));
 app.use("/api/posts", require("./routes/postRoutes"));
+app.use("/api/header",  require("./routes/user/headerRoutes"))
+app.use("/api/footer", require("./routes/user/footerRoutes") )
 
 
 // admin Routes
