@@ -4,14 +4,21 @@ const { createSubCategory, getSubCategories, getSubCategoryById, deleteSubCatego
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const authMiddleware = require('../../middleware/authMiddleware');
 const router = express.Router();
-const upload = require("../../utils/multer")
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+
+const upload = multer({ storage });
 
 
 
-router.post("/add", upload.single("modelFile"), createSubCategory);
-router.get("/all", getSubCategories);
-router.get("/:id", getSubCategoryById);
+router.get("/all",authMiddleware, getSubCategories);
+router.post("/add",authMiddleware, upload.single("file"), createSubCategory);
+router.get("/",authMiddleware, getSubCategoryById);
 router.delete("/:id", deleteSubCategory);
 
 

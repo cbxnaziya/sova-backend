@@ -8,6 +8,7 @@ const {
   updateTexture,
   deleteTexture
 } = require('../../controllers/user/textureController');
+const authMiddleware = require('../../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -24,8 +25,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Routes
-router.get('/all', getAllTextures);
-router.get('/:texture_id', getTextureById);
+router.get('/all',authMiddleware, getAllTextures);
+router.get('/:texture_id',authMiddleware, getTextureById);
 
 
 

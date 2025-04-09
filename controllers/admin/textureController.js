@@ -1,5 +1,5 @@
 const { default: mongoose } = require('mongoose');
-const Texture = require('../../models/texture');
+const Texture = require('../../models/Texture');
 
 // Get all textures (ID and category only)
 exports.getAllTextures = async (req, res) => {

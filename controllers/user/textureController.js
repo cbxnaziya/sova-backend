@@ -1,10 +1,10 @@
 // const Texture = require('../models/Texture');
-const Texture = require('../../models/texture');
+const Texture = require('../../models/Texture');
 
 // Get all textures (ID and category only)
 exports.getAllTextures = async (req, res) => {
     try {
-      const textures = await Texture.find({}, 'textureId textureCategory');
+      const textures = await Texture.find({}, 'textureId textureCategory textureUrl');
       res.json({ success: true, textures });
     } catch (err) {
       res.status(500).json({ success: false, message: 'Server Error' });

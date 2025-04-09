@@ -11,27 +11,60 @@ exports.getSubCategories = async (req, res) => {
   }
 };
 
-exports.createSubCategory = async (req, res) => {
-  try {
-    const { name, categoryId } = req.body;
-    const modelUrl = req.file.path.replace(/\\/g, "/"); // for Windows compatibility
+// exports.createSubCategory = async (req, res) => {
+//   try {
+//     const { name, categoryId } = req.body;
+//     const modelUrl = req.file.filename.replace(/\\/g, "/"); // for Windows compatibility
 
-    const subcategory = await ModelSubCategory.create({
+//     const subcategory = await ModelSubCategory.create({
+//       name,
+//       categoryId,
+//       modelUrl,
+//     });
+
+//     res.status(201).json(subcategory);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+// Create a new subcategory with file upload
+exports.createSubCategory = async (req, res) => {
+  const { name, category_id } = req.body;
+
+  if (!name || !category_id || !req.file) {
+    return res.status(400).json({ success: false, message: 'Name, category, and model file are required.' });
+  }
+
+  try {
+    // Construct file URL like in createTexture
+    const modelUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+
+     const existingSubCategory = await ModelSubCategory.findOne({name,categoryId:category_id});
+     if(existingSubCategory){
+      return res.status(400).json({status:false, message:"Sub Category name of already exist."})
+     }
+    const newSubCategory = new ModelSubCategory({
       name,
-      categoryId,
+      categoryId: category_id,
       modelUrl,
     });
 
-    res.status(201).json(subcategory);
+    await newSubCategory.save();
+
+    res.status(201).json({ success: true, message: 'Subcategory added successfully' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error creating subcategory:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
 
 exports.getSubCategoryById = async (req, res) => {
   try {
-    const subcategory = await ModelSubCategory.findById(req.params.id).populate("categoryId", "name");
+    const {categoryId, name} = req.body;  
+    const subcategory = await ModelSubCategory.find({categoryId,name}).populate("categoryId", "name");
     if (!subcategory) return res.status(404).json({ message: "SubCategory not found" });
     res.status(200).json(subcategory);
   } catch (err) {

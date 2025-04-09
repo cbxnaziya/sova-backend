@@ -23,7 +23,9 @@ app.use("/api/header",  require("./routes/user/headerRoutes"))
 app.use("/api/footer", require("./routes/user/footerRoutes") )
 app.use('/api/texture', require("./routes/user/textureRoutes"));
 app.use("/api/shop", require("./routes/user/shopCategoryRoutes"))
-app.use("/api/model-category", require("./routes/admin/modelCategoryRoutes"));
+app.use("/api/model-category", require("./routes/user/modelCategoryRoutes"));
+app.use("/api/model-subcategory", require("./routes/user/modelSubCategoryRoutes"))
+app.use('/api/projects', require("./routes/user/projectRoutes"));
 
 
 // admin Routes
