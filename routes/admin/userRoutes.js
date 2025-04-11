@@ -10,6 +10,8 @@ router.get("/all", userController.getUsers);
 router.put("/:id", userController.updateUser);
 router.delete("/:id", userController.deleteUser);
 router.post("/add", userController.createUser);
+router.get("/filter", authMiddleware, userController.filterUsers);
+
 
 
 

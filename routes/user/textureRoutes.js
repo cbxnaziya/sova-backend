@@ -25,8 +25,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Routes
-router.get('/all',authMiddleware, getAllTextures);
-router.get('/:texture_id',authMiddleware, getTextureById);
+router.get('/all', authMiddleware, getAllTextures);
+router.get('/:texture_id', authMiddleware, getTextureById);
 
 
 

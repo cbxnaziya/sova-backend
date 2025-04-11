@@ -3,23 +3,69 @@
 const bcrypt = require("bcryptjs");
 const User = require("../../models/User");
 const Role = require("../../models/Role");
+const { default: mongoose } = require("mongoose");
 
 // Get all users
-exports.getUsers = async (req, res) => {
+// exports.getUsers = async (req, res) => {
 
+//   try {
+
+//     const users = await User.find();
+
+//     return res.status(200).json({ success: true, users: users });
+
+//   } catch (error) {
+//     console.log("Error", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" })
+//   }
+
+
+// };
+
+// Get all users with pagination
+exports.getUsers = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;        // Current page number
+  const limit = parseInt(req.query.limit) || 10;     // Results per page
+  const skip = (page - 1) * limit;
+   const sort = req.query.sort || "latest";
   try {
 
-    const users = await User.find();
+    let sortOption = {};
+if (sort === 'latest') sortOption = { _id: -1 };
+else if (sort === 'oldest') sortOption = { _id: 1 };
+else if (sort === 'nameAsc') sortOption = { name: 1 };
+else if (sort === 'nameDesc') sortOption = { name: -1 };
+else if (sort === 'phoneAsc') sortOption = { phone: 1 };
+else if (sort === 'phoneDesc') sortOption = { phone: -1 };
+else if (sort === 'emailAsc') sortOption = { email: 1 };
+else if (sort === 'emailDesc') sortOption = { email: -1 };
+console.log("sortoption", sortOption);
 
-    return res.status(200).json({ success: true, users: users });
-
+    const [users, total] = await Promise.all([
+      User.find()
+      .collation({ locale: "en", strength: 2 })
+        .sort(sortOption) // 1. sort first by latest
+        .skip(skip)              // 2. then skip
+        .limit(limit),           // 3. then limit
+      User.countDocuments()
+    ]);
+  
+    return res.status(200).json({
+      success: true,
+      users,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
   } catch (error) {
     console.log("Error", error);
-    return res.status(500).json({ success: false, message: "Internal server error" })
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
   }
-
-
 };
+
 
 // Get user by ID
 exports.getUserById = async (req, res) => {
@@ -115,5 +161,81 @@ exports.getUserPermission = async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ status: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+// exports.filterUsers = async (req, res) => {
+//   const search = req.query.search;
+
+//   try {
+//     let users;
+//     if (search) {
+//       const isValidObjectId = mongoose.Types.ObjectId.isValid(search);
+//       const query = {
+//         // $or: [
+//         //   { name: { $regex: search, $options: 'i' } },
+//         //   { age: isNaN(search) ? null : parseInt(search) },
+//         // ]
+//         $or: [
+//           { name: { $regex: search, $options: "i" } },
+//           { email: { $regex: search, $options: "i" } },
+//           { phone: { $regex: search, $options: "i" } },
+//             ...(isValidObjectId ? [{ _id: search }] : []) // only add if valid ObjectId
+//         ]
+//       };
+
+//       // Filter out nulls again
+//       const filteredQuery = {
+//         $or: query.$or.filter(condition => Object.values(condition)[0] !== null)
+//       };
+
+//       users = await User.find(filteredQuery);
+//     } else {
+//       users = await User.find();
+//     }
+
+//     return res.status(200).json({ success: true, users });
+//   } catch (error) {
+//     console.log("Error", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+
+
+// In your controller
+exports.filterUsers = async (req, res) => {
+  const search = req.query.search || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const skip = (page - 1) * limit;
+
+  try {
+    const searchRegex = new RegExp(search, "i");
+
+    const filter = {
+      $or: [
+        { name: { $regex: searchRegex } },
+        { email: { $regex: searchRegex } },
+        { phone: { $regex: searchRegex } }
+      ]
+    };
+
+    const [users, total] = await Promise.all([
+      User.find(search ? filter : {}).skip(skip).limit(limit),
+      User.countDocuments(search ? filter : {})
+    ]);
+
+    res.status(200).json({
+      success: true,
+      users,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    console.error("Error filtering users:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
