@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
    status:{type:String,enum:["active","inactive","pending"], default:"active"},
    role: {type:String}
 
-})
+}, {timestamps:true})
 
 module.exports = mongoose.model("User",UserSchema)
 // const mongoose = require("mongoose")

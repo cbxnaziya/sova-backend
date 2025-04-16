@@ -41,6 +41,7 @@ app.use('/admin/api/texture', require("./routes/admin/textureRoutes"));
 app.use('/admin/api/shop', require("./routes/admin/shopCategoryRoutes"));
 app.use("/admin/api/model-category", require("./routes/admin/modelCategoryRoutes"));
 app.use("/admin/api/model-subcategory", require("./routes/admin/modelSubCategoryRoutes"));
+app.use("/admin/api/cms", require("./routes/admin/cmsRoutes"))
 
 
 const PORT = process.env.PORT || 5000;

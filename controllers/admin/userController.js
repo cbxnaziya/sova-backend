@@ -24,32 +24,47 @@ const { default: mongoose } = require("mongoose");
 
 // Get all users with pagination
 exports.getUsers = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;        // Current page number
-  const limit = parseInt(req.query.limit) || 10;     // Results per page
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
-   const sort = req.query.sort || "latest";
+  const sort = req.query.sort || "latest";
+
+  const { fromDate, toDate } = req.query;
+
   try {
-
     let sortOption = {};
-if (sort === 'latest') sortOption = { _id: -1 };
-else if (sort === 'oldest') sortOption = { _id: 1 };
-else if (sort === 'nameAsc') sortOption = { name: 1 };
-else if (sort === 'nameDesc') sortOption = { name: -1 };
-else if (sort === 'phoneAsc') sortOption = { phone: 1 };
-else if (sort === 'phoneDesc') sortOption = { phone: -1 };
-else if (sort === 'emailAsc') sortOption = { email: 1 };
-else if (sort === 'emailDesc') sortOption = { email: -1 };
-console.log("sortoption", sortOption);
+    let filter = {};
 
+    // Sorting options
+    if (sort === 'latest') sortOption = { _id: -1 };
+    else if (sort === 'oldest') sortOption = { _id: 1 };
+    else if (sort === 'nameAsc') sortOption = { name: 1 };
+    else if (sort === 'nameDesc') sortOption = { name: -1 };
+    else if (sort === 'phoneAsc') sortOption = { phone: 1 };
+    else if (sort === 'phoneDesc') sortOption = { phone: -1 };
+    else if (sort === 'emailAsc') sortOption = { email: 1 };
+    else if (sort === 'emailDesc') sortOption = { email: -1 };
+
+   // Date range filter
+   if (fromDate || toDate) {
+    filter.createdAt = {};
+    if (fromDate) filter.createdAt.$gte = new Date(fromDate);
+    if (toDate) {
+      // Set time to end of day
+      const endOfDay = new Date(toDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      filter.createdAt.$lte = endOfDay;
+    }
+  }
     const [users, total] = await Promise.all([
-      User.find()
-      .collation({ locale: "en", strength: 2 })
-        .sort(sortOption) // 1. sort first by latest
-        .skip(skip)              // 2. then skip
-        .limit(limit),           // 3. then limit
-      User.countDocuments()
+      User.find(filter)
+        .collation({ locale: "en", strength: 2 })
+        .sort(sortOption)
+        .skip(skip)
+        .limit(limit),
+      User.countDocuments(filter)
     ]);
-  
+
     return res.status(200).json({
       success: true,
       users,
@@ -65,6 +80,7 @@ console.log("sortoption", sortOption);
     });
   }
 };
+
 
 
 // Get user by ID
@@ -83,7 +99,7 @@ exports.getUserById = async (req, res) => {
 // Create a new user
 exports.createUser = async (req, res) => {
   try {
-    const { name, email, phone,password ,status, role} = req.body;
+    const { name, email, phone, password, status, role } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -96,7 +112,7 @@ exports.createUser = async (req, res) => {
 
     const newUser = new User({
       name,
-      email, 
+      email,
       phone,
       password: hashedPassword,
       status,
@@ -115,17 +131,17 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
 
-    const { name,email, account_name, company, phone, country, status, role } = req.body;
+    const { name, email, account_name, company, phone, country, status, role } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      {name, email, account_name, company, phone, country, status, role },
+      { name, email, account_name, company, phone, country, status, role },
       { new: true }
     );
 
     if (!updatedUser) return res.status(404).json({ message: "User not found" });
 
-    res.json({success:true, message: "User updated successfully",  });
+    res.json({ success: true, message: "User updated successfully", });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -147,17 +163,17 @@ exports.getUserPermission = async (req, res) => {
   try {
     const name = req.user.role;
     console.log(req.user.role, "role");
-    
+
     // Find the role that matches the logged-in user's role
     const roleData = await Role.findOne({ name });
-    
+
     console.log(roleData, "roleData");
     if (!roleData) {
       return res.status(404).json({ status: false, message: "Role not found." });
     }
 
     // Return only the permissions of the authenticated user's role
-    return res.status(200).json({ status: true, permissions: roleData.permissions, role:roleData.name  });
+    return res.status(200).json({ status: true, permissions: roleData.permissions, role: roleData.name });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ status: false, message: "Internal Server Error" });

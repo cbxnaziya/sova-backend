@@ -1,33 +1,93 @@
 
 const bcrypt = require("bcryptjs");
 const Customer = require("../../models/Customer");
+
+
+
 exports.getAllCustomer = async (req, res) => {
-  // try {
-
-  //     const customers = await Customer.find();
-
-  //     return res.status(200).json({ success: true, customers: customers });
-
-  // } catch (error) {
-  //     console.log("Error", error);
-  //     return res.status(500).json({ success: false, message: "Internal server error" })
-  // }
   try {
+    const {
+      search,          // search by name or email (you can customize fields)
+      sortBy, // default sorting
+      order,       // asc or desc
+      page,
+      limit,
+      status,
+      startDate,
+      endDate,             // example of filter (like "active", "inactive")
+    } = req.query;
 
-    const customers = await Customer.find();
+    const filter = {};
 
-    return res.status(200).json({ success: true, customers: customers });
+    if (search) {
+      filter.$or = [
+        { account_name: { $regex: search, $options: "i" } },
+        { company: { $regex: search, $options: "i" } },
+        { country: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } }
+      ];
+    }
+    
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
+    }
+    
+    if (status) {
+      filter.status = status;
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const customers = await Customer.find(filter)
+      .sort({ [sortBy]: order === "asc" ? 1 : -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Customer.countDocuments(filter);
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / limit),
+      customers
+    });
 
   } catch (error) {
     console.log("Error", error);
-    return res.status(500).json({ success: false, message: "Internal server error" })
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
   }
+};
+
+// exports.getAllCustomer = async (req, res) => {
+
+//   try {
+
+//     const customers = await Customer.find();
+
+//     return res.status(200).json({ success: true, customers: customers });
+
+//   } catch (error) {
+//     console.log("Error", error);
+//     return res.status(500).json({ success: false, message: "Internal server error" })
+//   }
 
 
 
-}
+// }
 
 exports.addCustomer = async (req, res) => {
+  
   // try {
   //     const { name, email, phone, status } = req.body;
 
