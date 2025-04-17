@@ -41,8 +41,11 @@ app.use('/admin/api/texture', require("./routes/admin/textureRoutes"));
 app.use('/admin/api/shop', require("./routes/admin/shopCategoryRoutes"));
 app.use("/admin/api/model-category", require("./routes/admin/modelCategoryRoutes"));
 app.use("/admin/api/model-subcategory", require("./routes/admin/modelSubCategoryRoutes"));
-app.use("/admin/api/cms", require("./routes/admin/cmsRoutes"))
+app.use("/admin/api/pages", require("./routes/admin/pageRoutes"));
+// app.use("/admin/api/cms", require("./routes/admin/cmsRoutes"))
+app.use('/admin/api/cms-home', require('./routes/admin/homeCmsRoutes'));
 
+// Routes
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
